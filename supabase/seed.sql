@@ -1,0 +1,30 @@
+insert into public.trends (id, title, niche, description, format, freshness_label, source, first_seen_at)
+values
+  ('11111111-1111-4111-8111-111111111111', '3 mistakes keeping your gains invisible', 'fitness', 'Short Reel unpacking common training mistakes with a corrective tip for each.', 'Reel', 'Peaking', 'mock_catalog', '2026-05-22T00:00:00+00:00'),
+  ('11111111-1111-4111-8111-111111111112', 'What I eat in a high-protein Indian day', 'fitness', 'Meal-by-meal native food plan with protein counts and simple swaps.', 'Carousel', 'Fresh', 'mock_catalog', '2026-06-01T00:00:00+00:00'),
+  ('22222222-2222-4222-8222-222222222221', 'Style one kurta five weekday ways', 'fashion', 'Outfit transition reel for office, errands, dinner, college, and festive-lite looks.', 'Reel', 'Fresh', 'mock_catalog', '2026-05-30T00:00:00+00:00'),
+  ('22222222-2222-4222-8222-222222222222', 'Budget streetwear under Rs 999', 'fashion', 'Fast-paced recommendations with price overlays and styling notes.', 'Carousel', 'Peaking', 'mock_catalog', '2026-05-18T00:00:00+00:00'),
+  ('33333333-3333-4333-8333-333333333331', 'One pan tiffin recipe in 12 minutes', 'food', 'Quick prep, local ingredients, and final lunchbox reveal.', 'Reel', 'Fresh', 'mock_catalog', '2026-06-03T00:00:00+00:00'),
+  ('33333333-3333-4333-8333-333333333332', 'Regional snack taste test bracket', 'food', 'Audience-voted comparison of snacks, flavors, and nostalgia hooks.', 'Story series', 'Peaking', 'mock_catalog', '2026-05-26T00:00:00+00:00'),
+  ('44444444-4444-4444-8444-444444444441', 'From Rs 0 to first paying customer', 'business', 'Founder mini-case study breaking the exact sales motion.', 'Carousel', 'Fresh', 'mock_catalog', '2026-05-29T00:00:00+00:00'),
+  ('44444444-4444-4444-8444-444444444442', 'Small business audit in 60 seconds', 'business', 'Before-and-after walkthrough of pricing, offer, copy, and operations fixes.', 'Reel', 'Peaking', 'mock_catalog', '2026-05-20T00:00:00+00:00'),
+  ('55555555-5555-4555-8555-555555555551', 'Study with me: realistic exam sprint', 'student life', 'Time-blocked routine with honest distractions, reset moments, and result reflection.', 'Reel', 'Peaking', 'mock_catalog', '2026-05-16T00:00:00+00:00'),
+  ('55555555-5555-4555-8555-555555555552', 'Hostel room upgrades under Rs 500', 'student life', 'Practical product and layout ideas for cramped student rooms.', 'Carousel', 'Fresh', 'mock_catalog', '2026-06-02T00:00:00+00:00'),
+  ('66666666-6666-4666-8666-666666666661', 'AI tool stack for solo creators', 'AI/tools', 'Workflow showing ideation, scripting, thumbnails, scheduling, and analytics.', 'Carousel', 'Fresh', 'mock_catalog', '2026-06-04T00:00:00+00:00'),
+  ('66666666-6666-4666-8666-666666666662', 'Prompt makeover: bad vs useful', 'AI/tools', 'Side-by-side prompt rewrites that creators can copy into their workflow.', 'Reel', 'Peaking', 'mock_catalog', '2026-05-19T00:00:00+00:00'),
+  ('77777777-7777-4777-8777-777777777771', 'POV: your family discovers your creator job', 'comedy', 'Relatable skit about explaining content creation income at home.', 'Reel', 'Peaking', 'mock_catalog', '2026-05-25T00:00:00+00:00'),
+  ('77777777-7777-4777-8777-777777777772', 'Mumbai local inner monologue', 'comedy', 'Fast observational voiceover using commute moments as punchlines.', 'Reel', 'Fresh', 'mock_catalog', '2026-06-05T00:00:00+00:00'),
+  ('88888888-8888-4888-8888-888888888881', 'Discipline is built in boring reps', 'motivation', 'Calm motivational reel showing tiny daily consistency over hype.', 'Reel', 'Peaking', 'mock_catalog', '2026-05-23T00:00:00+00:00'),
+  ('88888888-8888-4888-8888-888888888882', 'A letter to my younger self', 'motivation', 'Emotional storytelling caption with lessons and audience reflection prompt.', 'Caption post', 'Fresh', 'mock_catalog', '2026-06-06T00:00:00+00:00'),
+  ('99999999-9999-4999-8999-999999999991', 'Skincare routine for humid monsoon days', 'skincare', 'Simple AM/PM routine tuned for Indian humidity and sweat.', 'Carousel', 'Fresh', 'mock_catalog', '2026-06-01T00:00:00+00:00'),
+  ('99999999-9999-4999-8999-999999999992', 'Ingredient red flags in plain English', 'skincare', 'Educational breakdown of labels, actives, and patch-test warnings.', 'Reel', 'Overused', 'mock_catalog', '2026-04-18T00:00:00+00:00'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1', 'Behind the counter: a day at our shop', 'local business', 'Human, operational look at staff, prep, customers, and founder choices.', 'Reel', 'Fresh', 'mock_catalog', '2026-06-02T00:00:00+00:00'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa2', 'Customer question becomes a content series', 'local business', 'Turn repeated customer doubts into weekly posts with replies and demos.', 'Story series', 'Peaking', 'mock_catalog', '2026-05-21T00:00:00+00:00')
+on conflict (id) do update set
+  title = excluded.title,
+  niche = excluded.niche,
+  description = excluded.description,
+  format = excluded.format,
+  freshness_label = excluded.freshness_label,
+  source = excluded.source,
+  first_seen_at = excluded.first_seen_at;
