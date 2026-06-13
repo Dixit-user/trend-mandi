@@ -35,7 +35,7 @@ class OpenAIService:
         return json.loads(content)
 
     def analyze_profile(self, captions: List[str], instagram_handle: str | None = None) -> ProfileAnalysis:
-        fallback = self._fallback_profile_analysis(captions)
+        fallback = self._fallback_profile_analysis(captions, instagram_handle)
         if self.client is None:
             return fallback
 
@@ -56,7 +56,8 @@ class OpenAIService:
         )
         try:
             data = self._json_completion(system, user)
-            return ProfileAnalysis.model_validate(data)
+            ai_result = ProfileAnalysis.model_validate(data)
+            return self._guard_profile_analysis(ai_result, fallback)
         except Exception:
             return fallback
 
@@ -111,38 +112,195 @@ class OpenAIService:
         except Exception:
             return fallback
 
-    def _fallback_profile_analysis(self, captions: List[str]) -> ProfileAnalysis:
-        text = " ".join(captions).lower()
+    def _fallback_profile_analysis(self, captions: List[str], instagram_handle: str | None = None) -> ProfileAnalysis:
+        text = " ".join([instagram_handle or "", *captions]).lower()
         niche_keywords = {
-            "fitness": ["gym", "protein", "workout", "fat loss", "fitness"],
-            "fashion": ["outfit", "style", "kurta", "streetwear", "fashion"],
-            "food": ["recipe", "tiffin", "snack", "cook", "food"],
-            "business": ["sales", "customer", "startup", "founder", "business"],
-            "student life": ["exam", "study", "hostel", "college", "student"],
-            "AI/tools": ["ai", "prompt", "tool", "automation", "workflow"],
-            "comedy": ["pov", "joke", "relatable", "skit", "funny"],
-            "motivation": ["discipline", "dream", "mindset", "consistent", "growth"],
-            "skincare": ["skin", "serum", "routine", "spf", "acne"],
-            "local business": ["shop", "store", "counter", "local", "customer"],
+            "fitness": [
+                "gym",
+                "protein",
+                "workout",
+                "fat loss",
+                "fitness",
+                "muscle",
+                "strength",
+                "yoga",
+                "diet",
+                "calories",
+                "steps",
+                "training",
+            ],
+            "fashion": [
+                "outfit",
+                "style",
+                "kurta",
+                "streetwear",
+                "fashion",
+                "wardrobe",
+                "dress",
+                "saree",
+                "styling",
+                "lookbook",
+                "fit check",
+            ],
+            "food": [
+                "recipe",
+                "tiffin",
+                "snack",
+                "cook",
+                "food",
+                "meal",
+                "kitchen",
+                "restaurant",
+                "taste",
+                "chutney",
+                "lunchbox",
+                "breakfast",
+            ],
+            "business": [
+                "sales",
+                "customer",
+                "startup",
+                "founder",
+                "business",
+                "profit",
+                "pricing",
+                "client",
+                "marketing",
+                "offer",
+                "lead",
+                "brand",
+            ],
+            "student life": [
+                "exam",
+                "study",
+                "hostel",
+                "college",
+                "student",
+                "assignment",
+                "revision",
+                "semester",
+                "class",
+                "notes",
+                "campus",
+            ],
+            "AI/tools": [
+                "ai",
+                "prompt",
+                "tool",
+                "automation",
+                "workflow",
+                "chatgpt",
+                "notion",
+                "canva",
+                "edit",
+                "productivity",
+                "software",
+            ],
+            "comedy": [
+                "pov",
+                "joke",
+                "relatable",
+                "skit",
+                "funny",
+                "meme",
+                "roast",
+                "when you",
+                "that moment",
+                "comedy",
+            ],
+            "motivation": [
+                "discipline",
+                "dream",
+                "mindset",
+                "consistent",
+                "growth",
+                "motivation",
+                "self improvement",
+                "habit",
+                "focus",
+                "goals",
+            ],
+            "skincare": [
+                "skin",
+                "serum",
+                "routine",
+                "spf",
+                "acne",
+                "sunscreen",
+                "moisturizer",
+                "cleanser",
+                "barrier",
+                "glow",
+                "beauty",
+            ],
+            "local business": [
+                "shop",
+                "store",
+                "counter",
+                "local",
+                "customer",
+                "salon",
+                "cafe",
+                "bakery",
+                "boutique",
+                "orders",
+                "delivery",
+            ],
         }
         scores = {
-            niche: sum(1 for keyword in keywords if keyword in text)
+            niche: sum(text.count(keyword) for keyword in keywords)
             for niche, keywords in niche_keywords.items()
         }
-        niche = max(scores, key=scores.get) if any(scores.values()) else "business"
+        sorted_scores = sorted(scores.items(), key=lambda item: item[1], reverse=True)
+        niche = sorted_scores[0][0] if sorted_scores[0][1] > 0 else self._niche_from_text_hash(text)
 
-        tone = "educational and direct"
-        if any(word in text for word in ["pov", "haha", "funny", "relatable"]):
+        if any(word in text for word in ["pov", "haha", "funny", "relatable", "meme", "roast", "when you"]):
             tone = "funny and relatable"
-        elif any(word in text for word in ["mistake", "how to", "tip", "workflow"]):
+        elif any(word in text for word in ["mistake", "how to", "tip", "workflow", "guide", "save this", "learn"]):
             tone = "educational and practical"
-        elif any(word in text for word in ["journey", "younger self", "dream", "hard"]):
+        elif any(word in text for word in ["journey", "younger self", "dream", "hard", "story", "wish", "felt"]):
             tone = "emotional and motivational"
+        elif any(word in text for word in ["buy", "offer", "limited", "dm", "book", "order", "sale"]):
+            tone = "direct and promotional"
+        elif any(word in text for word in ["behind the scenes", "day in my life", "vlog", "routine"]):
+            tone = "personal and behind-the-scenes"
+        else:
+            tone = "clear and practical"
 
-        language = "Hinglish" if re.search(r"\b(yaar|bhai|didi|kaise|nahi|acha|desi)\b", text) else "English"
-        content_style = "short-form Reel explainers" if any(word in text for word in ["reel", "video", "voiceover"]) else "caption-led educational posts"
-        audience_type = "Indian creators and small business owners" if niche in {"business", "AI/tools", "local business"} else "young Indian lifestyle audience"
-        confidence = 72 if len(captions) >= 5 else 58
+        if re.search(r"[\u0900-\u097f]", text):
+            language = "Hindi or mixed Hindi-English"
+        elif re.search(r"\b(yaar|bhai|didi|kaise|nahi|acha|achha|desi|matlab|kyunki|hai|kya|apna|wala)\b", text):
+            language = "Hinglish"
+        elif re.search(r"\b(vanakkam|enna|nalla|tamil|telugu|kannada|malayalam)\b", text):
+            language = "regional Indian English mix"
+        else:
+            language = "English"
+
+        if any(word in text for word in ["carousel", "slides", "swipe", "save this checklist"]):
+            content_style = "carousel education and saveable lists"
+        elif any(word in text for word in ["pov", "skit", "voiceover", "reel", "video", "transition"]):
+            content_style = "short-form Reel storytelling"
+        elif any(word in text for word in ["review", "rating", "tested", "before and after"]):
+            content_style = "review and comparison content"
+        elif any(word in text for word in ["behind the scenes", "day in my life", "routine"]):
+            content_style = "behind-the-scenes lifestyle content"
+        else:
+            content_style = "caption-led educational posts"
+
+        audience_by_niche = {
+            "fitness": "health-conscious beginners and busy young adults",
+            "fashion": "style-conscious students and young professionals",
+            "food": "home cooks, food lovers, and busy families",
+            "business": "founders, freelancers, and small business owners",
+            "student life": "college students and exam-focused learners",
+            "AI/tools": "creators, operators, and productivity-focused professionals",
+            "comedy": "young Indian audiences looking for relatable entertainment",
+            "motivation": "self-improvement and productivity-focused followers",
+            "skincare": "beauty and skincare beginners in Indian conditions",
+            "local business": "nearby customers and local small business owners",
+        }
+        audience_type = audience_by_niche[niche]
+        confidence = min(90, 54 + min(len(captions), 10) * 4 + min(sorted_scores[0][1], 8) * 2)
 
         return ProfileAnalysis(
             niche=niche,
@@ -150,9 +308,44 @@ class OpenAIService:
             language=language,
             audience_type=audience_type,
             content_style=content_style,
-            summary=f"This creator appears to make {tone} content for a {niche} audience.",
+            summary=f"This creator appears to make {tone} {niche} content for {audience_type}.",
             confidence=confidence,
         )
+
+    def _niche_from_text_hash(self, text: str) -> str:
+        fallback_niches = [
+            "business",
+            "motivation",
+            "student life",
+            "AI/tools",
+            "local business",
+            "fashion",
+            "food",
+            "fitness",
+            "skincare",
+            "comedy",
+        ]
+        return fallback_niches[sum(ord(char) for char in text) % len(fallback_niches)] if text else "business"
+
+    def _guard_profile_analysis(self, ai_result: ProfileAnalysis, fallback: ProfileAnalysis) -> ProfileAnalysis:
+        generic_niches = {"creator", "content creator", "lifestyle", "general", "business"}
+        generic_tones = {"professional", "informative", "educational", "casual", "friendly"}
+        generic_audiences = {"general audience", "followers", "creators", "young audience"}
+
+        data = ai_result.model_dump()
+        if data["niche"].strip().lower() in generic_niches and fallback.confidence >= 66:
+            data["niche"] = fallback.niche
+        if data["tone"].strip().lower() in generic_tones and fallback.confidence >= 66:
+            data["tone"] = fallback.tone
+        if data["audience_type"].strip().lower() in generic_audiences and fallback.confidence >= 66:
+            data["audience_type"] = fallback.audience_type
+        if not data["language"] or data["language"].strip().lower() == "unknown":
+            data["language"] = fallback.language
+        if not data["content_style"] or data["content_style"].strip().lower() in {"posts", "reels", "content"}:
+            data["content_style"] = fallback.content_style
+
+        data["confidence"] = max(min(int(data["confidence"]), 100), fallback.confidence)
+        return ProfileAnalysis.model_validate(data)
 
     def _fallback_hooks(self, profile: Dict, trend: Dict, style: str) -> HookGenerationResponse:
         style_prefix = {

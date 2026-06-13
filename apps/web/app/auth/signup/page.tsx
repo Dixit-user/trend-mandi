@@ -6,6 +6,7 @@ import { PenLine, UserPlus } from "lucide-react";
 import { FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { GoogleOAuthButton } from "@/components/auth/google-oauth-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getSupabaseClient, supabaseConfigured } from "@/lib/supabase";
@@ -57,6 +58,12 @@ export default function SignUpPage() {
           </p>
         </CardHeader>
         <CardContent>
+          <GoogleOAuthButton label="Sign up with Google" onError={setError} />
+          <div className="my-5 flex items-center gap-3">
+            <div className="h-px flex-1 bg-line" />
+            <span className="text-xs font-bold uppercase text-muted">or</span>
+            <div className="h-px flex-1 bg-line" />
+          </div>
           <form onSubmit={submit} className="grid gap-4">
             <label className="grid gap-2 text-sm font-semibold">
               Email

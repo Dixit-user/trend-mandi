@@ -1,22 +1,14 @@
 import type { Config } from "tailwindcss";
 
+import { trendMandiTokens } from "./design-system/tokens";
+
 const config: Config = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./design-system/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
-      colors: {
-        ink: "#171923",
-        muted: "#69707d",
-        paper: "#fffaf3",
-        coral: "#ef5b4c",
-        teal: "#0f8f88",
-        saffron: "#f4a62a",
-        mint: "#dff5ed",
-        line: "#e8e1d8"
-      },
-      boxShadow: {
-        soft: "0 16px 40px rgba(23, 25, 35, 0.10)"
-      }
+      colors: trendMandiTokens.colors,
+      borderRadius: trendMandiTokens.radii,
+      boxShadow: trendMandiTokens.shadows
     }
   },
   plugins: []

@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HookResponse, ScriptResponse, Trend, generateHooks, generateScript, getTrends } from "@/lib/api";
+import { HookResponse, ScriptResponse, Trend, generateHooks, generateScript, getRecommendedTrends, getTrends } from "@/lib/api";
 import { getStoredProfileId } from "@/lib/storage";
 import { cn } from "@/lib/utils";
 
@@ -43,8 +43,10 @@ export default function GeneratePage() {
   const [copied, setCopied] = useState("");
 
   useEffect(() => {
-    setProfileId(getStoredProfileId());
-    getTrends()
+    const storedProfileId = getStoredProfileId();
+    setProfileId(storedProfileId);
+    const trendRequest = storedProfileId ? getRecommendedTrends(storedProfileId) : getTrends();
+    trendRequest
       .then((result) => {
         setTrends(result);
         setTrendId(result[0]?.id || "");

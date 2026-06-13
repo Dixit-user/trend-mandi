@@ -8,17 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { ProfileAnalysis, analyzeProfile } from "@/lib/api";
 import { storeProfileId } from "@/lib/storage";
-
-function parseCaptions(value: string) {
-  return value
-    .split(/\n+/)
-    .map((caption) => caption.trim())
-    .filter(Boolean)
-    .slice(0, 10);
-}
 
 const analysisFields: Array<[keyof ProfileAnalysis, string]> = [
   ["niche", "Niche"],
@@ -30,7 +21,6 @@ const analysisFields: Array<[keyof ProfileAnalysis, string]> = [
 
 export default function AnalyzePage() {
   const [instagramHandle, setInstagramHandle] = useState("");
-  const [captionText, setCaptionText] = useState("");
   const [analysis, setAnalysis] = useState<ProfileAnalysis | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,8 +32,7 @@ export default function AnalyzePage() {
 
     try {
       const result = await analyzeProfile({
-        instagram_handle: instagramHandle.trim() || undefined,
-        captions: parseCaptions(captionText)
+        instagram_handle: instagramHandle.trim()
       });
       setAnalysis(result);
       storeProfileId(result.profile_id);
@@ -69,21 +58,18 @@ export default function AnalyzePage() {
           <CardContent>
             <form onSubmit={submit} className="grid gap-4">
               <label className="grid gap-2 text-sm font-semibold">
-                Instagram handle
+                Instagram profile link or handle
                 <Input
                   value={instagramHandle}
                   onChange={(event) => setInstagramHandle(event.target.value)}
-                  placeholder="@trendmandi"
+                  placeholder="https://instagram.com/trendmandi"
+                  required
                 />
               </label>
-              <label className="grid gap-2 text-sm font-semibold">
-                Captions
-                <Textarea
-                  value={captionText}
-                  onChange={(event) => setCaptionText(event.target.value)}
-                  placeholder={"How I plan a Reel in 20 minutes\n3 mistakes creators make before recording\nThis workflow saved my week"}
-                />
-              </label>
+              <p className="rounded-md bg-[#fff0cf] px-3 py-2 text-sm font-semibold leading-6 text-[#8a5a00]">
+                This app is now profile-link based. Local development uses the mock Instagram provider until a live
+                Instagram data provider is connected on the backend.
+              </p>
               {error ? <p className="rounded-md bg-[#ffe0dc] px-3 py-2 text-sm font-semibold text-[#9e2f24]">{error}</p> : null}
               <Button type="submit" disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <BarChart3 className="h-4 w-4" />}
@@ -103,6 +89,10 @@ export default function AnalyzePage() {
           <CardContent>
             {analysis ? (
               <div className="grid gap-4">
+                <div className="rounded-md border border-line bg-mint p-4">
+                  <p className="text-xs font-bold uppercase text-teal">Analysis source</p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-ink">{analysis.source_note}</p>
+                </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {analysisFields.map(([key, label]) => (
                     <div key={key} className="rounded-md border border-line bg-paper p-4">

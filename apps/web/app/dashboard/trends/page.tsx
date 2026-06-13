@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Trend, TrendMatch, getTrends, matchTrend } from "@/lib/api";
+import { RecommendedTrend, Trend, TrendMatch, getRecommendedTrends, getTrends, matchTrend } from "@/lib/api";
 import { getStoredProfileId } from "@/lib/storage";
 
 function freshnessTone(label: Trend["freshness_label"]) {
@@ -26,9 +26,27 @@ export default function TrendsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    setProfileId(getStoredProfileId());
-    getTrends()
-      .then(setTrends)
+    const storedProfileId = getStoredProfileId();
+    setProfileId(storedProfileId);
+    const trendRequest = storedProfileId ? getRecommendedTrends(storedProfileId) : getTrends();
+    trendRequest
+      .then((result) => {
+        setTrends(result);
+        const recommendedMatches = (result as Array<Trend | RecommendedTrend>).reduce<Record<string, TrendMatch>>(
+          (current, trend) => {
+            if ("score" in trend) {
+              current[trend.id] = {
+                score: trend.score,
+                reason: trend.reason,
+                breakdown: trend.breakdown
+              };
+            }
+            return current;
+          },
+          {}
+        );
+        setMatches(recommendedMatches);
+      })
       .catch((err: Error) => setError(err.message));
   }, []);
 
@@ -62,7 +80,7 @@ export default function TrendsPage() {
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <p className="text-sm font-bold uppercase text-coral">Trends</p>
-          <h1 className="mt-2 text-3xl font-black text-ink">Score trend fit</h1>
+          <h1 className="mt-2 text-3xl font-black text-ink">Recommended trend fit</h1>
         </div>
         <div className="relative w-full md:w-80">
           <Search className="pointer-events-none absolute left-3 top-3.5 h-4 w-4 text-muted" />
@@ -72,7 +90,7 @@ export default function TrendsPage() {
 
       {!profileId ? (
         <div className="flex flex-col justify-between gap-3 rounded-md border border-line bg-white p-4 sm:flex-row sm:items-center">
-          <p className="text-sm font-semibold text-muted">No analyzed profile is active yet.</p>
+          <p className="text-sm font-semibold text-muted">No analyzed profile is active yet, so the page is showing the full trend catalog.</p>
           <Link
             href="/dashboard/analyze"
             className="inline-flex min-h-10 items-center justify-center rounded-md bg-ink px-4 py-2 text-sm font-bold text-white hover:bg-teal"
@@ -125,7 +143,7 @@ export default function TrendsPage() {
                 ) : null}
                 <Button onClick={() => calculate(trend.id)} disabled={loadingTrendId === trend.id}>
                   {loadingTrendId === trend.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
-                  {match ? "Recalculate score" : "Calculate score"}
+                  {match ? "Refresh score" : "Calculate score"}
                 </Button>
               </CardContent>
             </Card>

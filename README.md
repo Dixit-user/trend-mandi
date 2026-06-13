@@ -1,6 +1,6 @@
 # Trend Mandi
 
-Trend Mandi is an MVP SaaS for creators who want trends that fit their niche, tone, language, audience, and content style. The manual caption flow works without Instagram login or scraping.
+Trend Mandi is an MVP SaaS for creators who want trends that fit their niche, tone, language, audience, and content style from an Instagram profile link.
 
 ## Stack
 
@@ -116,6 +116,23 @@ Open `http://localhost:3000`.
 
 If Supabase env vars are empty, the backend uses a local demo user and in-memory persistence so the MVP flow can be tested. Configure Supabase for real auth and database persistence.
 
+## Deploy
+
+Recommended deployment:
+
+- Frontend on Vercel with root directory `apps/web`
+- Backend on Railway with root directory `apps/api`
+- Auth/database on Supabase
+
+Deployment config files are included:
+
+- `apps/web/vercel.json`
+- `apps/api/railway.json`
+- `apps/web/.env.production.example`
+- `apps/api/.env.production.example`
+
+Full deployment steps are in `docs/deployment/vercel-railway.md`.
+
 ## API Endpoints
 
 - `GET /health`
@@ -130,7 +147,7 @@ If Supabase env vars are empty, the backend uses a local demo user and in-memory
 ## Main User Flow
 
 1. Sign up or use demo mode locally.
-2. Paste 5-10 captions on `/dashboard/analyze`.
+2. Add an Instagram profile link on `/dashboard/analyze`.
 3. Save the analyzed profile returned by the API.
 4. View mock trends on `/dashboard/trends`.
 5. Calculate a Trend Match Score.

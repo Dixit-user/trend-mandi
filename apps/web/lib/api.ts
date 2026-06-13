@@ -6,6 +6,8 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8
 
 export type ProfileAnalysis = {
   profile_id: string;
+  source: string;
+  source_note: string;
   niche: string;
   tone: string;
   language: string;
@@ -37,6 +39,8 @@ export type TrendMatch = {
     audience_relevance: number;
   };
 };
+
+export type RecommendedTrend = Trend & TrendMatch;
 
 export type Usage = {
   plan: string;
@@ -106,7 +110,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
   return response.json() as Promise<T>;
 }
 
-export function analyzeProfile(input: { instagram_handle?: string; captions: string[] }) {
+export function analyzeProfile(input: { instagram_handle: string }) {
   return apiFetch<ProfileAnalysis>("/profile/analyze", {
     method: "POST",
     body: JSON.stringify(input)
@@ -115,6 +119,10 @@ export function analyzeProfile(input: { instagram_handle?: string; captions: str
 
 export function getTrends() {
   return apiFetch<Trend[]>("/trends");
+}
+
+export function getRecommendedTrends(profileId: string) {
+  return apiFetch<RecommendedTrend[]>(`/trends/recommended/${profileId}`);
 }
 
 export function matchTrend(input: { profile_id: string; trend_id: string }) {

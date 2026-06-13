@@ -64,7 +64,7 @@ export default function DashboardPage() {
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div>
               <p className="text-sm leading-6 text-muted">
-                Turn captions into niche, tone, language, audience, and content style signals.
+                Turn an Instagram profile link into niche, tone, language, audience, and content style signals.
               </p>
               <Link
                 href="/dashboard/analyze"
@@ -80,8 +80,8 @@ export default function DashboardPage() {
                 <p className="mt-2 font-bold">Score trends after saving a profile.</p>
               </div>
               <div className="rounded-md border border-line bg-mint p-4 text-teal">
-                <p className="text-xs font-bold uppercase">Manual captions</p>
-                <p className="mt-2 font-bold">Works without Instagram scraping.</p>
+                <p className="text-xs font-bold uppercase">Profile link analysis</p>
+                <p className="mt-2 font-bold">Ready for a real Instagram provider.</p>
               </div>
             </div>
           </CardContent>

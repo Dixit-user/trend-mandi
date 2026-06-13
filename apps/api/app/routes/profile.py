@@ -19,26 +19,32 @@ async def analyze_profile(
     instagram_provider: InstagramProvider = Depends(get_instagram_provider),
     openai_service: OpenAIService = Depends(get_openai_service),
 ) -> ProfileAnalyzeResponse:
-    captions = payload.captions
-    source = "manual"
-
-    if not captions and payload.instagram_handle:
-        captions = instagram_provider.get_recent_captions(payload.instagram_handle)
-        source = "mock_instagram"
-
-    if not captions:
+    instagram_handle = (payload.instagram_handle or "").strip()
+    if not instagram_handle:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Provide 5-10 captions or an Instagram handle for the mock provider.",
+            detail="Provide an Instagram profile link or handle.",
         )
 
+    captions = instagram_provider.get_recent_captions(instagram_handle)
+    source = "instagram_provider"
+    source_note = (
+        "Analyzed from the configured Instagram profile provider. The local MVP provider is mock-based; "
+        "connect a real Instagram data provider for live account analysis."
+    )
+
     ensure_feature_allowed(repository, user_id, "profile_analyze")
-    analysis = openai_service.analyze_profile(captions, payload.instagram_handle)
-    profile = repository.save_profile(user_id, payload.instagram_handle, analysis.model_dump())
+    analysis = openai_service.analyze_profile(captions, instagram_handle)
+    profile = repository.save_profile(user_id, instagram_handle, analysis.model_dump())
     repository.save_content_samples(user_id, captions, source=source)
     repository.log_usage(
         user_id,
         "profile_analyze",
         tokens_estimated=max(1, sum(len(caption) for caption in captions) // 4),
     )
-    return ProfileAnalyzeResponse(profile_id=profile["id"], **analysis.model_dump())
+    return ProfileAnalyzeResponse(
+        profile_id=profile["id"],
+        source=source,
+        source_note=source_note,
+        **analysis.model_dump(),
+    )

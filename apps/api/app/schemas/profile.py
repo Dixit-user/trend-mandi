@@ -1,19 +1,8 @@
-from typing import List, Optional
-
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field
 
 
 class ProfileAnalyzeRequest(BaseModel):
-    instagram_handle: Optional[str] = Field(default=None, max_length=80)
-    captions: List[str] = Field(default_factory=list, max_length=10)
-
-    @field_validator("captions")
-    @classmethod
-    def normalize_captions(cls, captions: List[str]) -> List[str]:
-        cleaned = [caption.strip() for caption in captions if caption and caption.strip()]
-        if len(cleaned) > 10:
-            raise ValueError("Use at most 10 captions.")
-        return cleaned
+    instagram_handle: str = Field(min_length=1, max_length=240)
 
 
 class ProfileAnalysis(BaseModel):
@@ -28,3 +17,5 @@ class ProfileAnalysis(BaseModel):
 
 class ProfileAnalyzeResponse(ProfileAnalysis):
     profile_id: str
+    source: str
+    source_note: str

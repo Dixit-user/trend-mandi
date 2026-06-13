@@ -3,12 +3,12 @@ create extension if not exists pgcrypto;
 create table if not exists public.users_profile (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  instagram_handle text nullable,
-  niche text nullable,
-  tone text nullable,
-  language text nullable,
-  audience_type text nullable,
-  content_style text nullable,
+  instagram_handle text,
+  niche text,
+  tone text,
+  language text,
+  audience_type text,
+  content_style text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -19,7 +19,7 @@ create table if not exists public.content_samples (
   source text not null,
   caption text not null,
   hashtags text[] default '{}',
-  posted_at timestamptz nullable,
+  posted_at timestamptz,
   created_at timestamptz default now()
 );
 
@@ -57,7 +57,7 @@ create table if not exists public.usage_logs (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   feature_used text not null,
-  tokens_estimated int nullable,
+  tokens_estimated int,
   created_at timestamptz default now()
 );
 
@@ -66,8 +66,8 @@ create table if not exists public.subscriptions (
   user_id uuid not null references auth.users(id) on delete cascade,
   plan text default 'free',
   status text default 'active',
-  razorpay_sub_id text nullable,
-  current_period_end timestamptz nullable,
+  razorpay_sub_id text,
+  current_period_end timestamptz,
   created_at timestamptz default now()
 );
 
