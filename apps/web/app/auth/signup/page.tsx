@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { GoogleOAuthButton } from "@/components/auth/google-oauth-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { getSupabaseClient, supabaseConfigured } from "@/lib/supabase";
+import { getSupabaseClient, getSupabaseConfigError, supabaseConfigured } from "@/lib/supabase";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -24,6 +24,13 @@ export default function SignUpPage() {
     setError("");
     setMessage("");
     setLoading(true);
+
+    const configError = getSupabaseConfigError();
+    if (configError) {
+      setError(configError);
+      setLoading(false);
+      return;
+    }
 
     const supabase = getSupabaseClient();
     if (!supabaseConfigured() || !supabase) {

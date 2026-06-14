@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
-import { getSupabaseClient, supabaseConfigured } from "@/lib/supabase";
+import { getSupabaseClient, getSupabaseConfigError, supabaseConfigured } from "@/lib/supabase";
 
 export function GoogleOAuthButton({ label, onError }: { label: string; onError?: (message: string) => void }) {
   const router = useRouter();
@@ -12,6 +12,14 @@ export function GoogleOAuthButton({ label, onError }: { label: string; onError?:
 
   async function continueWithGoogle() {
     setLoading(true);
+
+    const configError = getSupabaseConfigError();
+    if (configError) {
+      setLoading(false);
+      onError?.(configError);
+      return;
+    }
+
     const supabase = getSupabaseClient();
 
     if (!supabaseConfigured() || !supabase) {
