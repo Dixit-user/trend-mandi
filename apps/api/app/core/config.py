@@ -11,7 +11,10 @@ class Settings(BaseSettings):
     supabase_url: Optional[str] = Field(default=None, alias="SUPABASE_URL")
     supabase_service_role_key: Optional[str] = Field(default=None, alias="SUPABASE_SERVICE_ROLE_KEY")
     database_url: Optional[str] = Field(default=None, alias="DATABASE_URL")
-    cors_origins: str = Field(default="http://localhost:3000", alias="CORS_ORIGINS")
+    cors_origins: str = Field(
+        default="http://localhost:3000,http://127.0.0.1:3000,https://trend-mandi-web.vercel.app",
+        alias="CORS_ORIGINS",
+    )
     demo_user_id: str = "00000000-0000-0000-0000-000000000001"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")

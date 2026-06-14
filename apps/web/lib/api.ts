@@ -6,9 +6,34 @@ function cleanEnvValue(value: string | undefined) {
   return value?.trim().replace(/^['"]|['"]$/g, "").trim();
 }
 
-const API_BASE_URL = (cleanEnvValue(process.env.NEXT_PUBLIC_API_BASE_URL) || "http://localhost:8000").replace(/\/$/, "");
+function runningLocally() {
+  if (typeof window === "undefined") {
+    return process.env.NODE_ENV !== "production";
+  }
+
+  return ["localhost", "127.0.0.1"].includes(window.location.hostname);
+}
+
+function getConfiguredApiBaseUrl() {
+  const apiBaseUrl = cleanEnvValue(process.env.NEXT_PUBLIC_API_BASE_URL);
+  if (apiBaseUrl) {
+    return apiBaseUrl.replace(/\/$/, "");
+  }
+
+  if (runningLocally()) {
+    return "http://localhost:8000";
+  }
+
+  return "";
+}
+
+const API_BASE_URL = getConfiguredApiBaseUrl();
 
 function getApiBaseUrl() {
+  if (!API_BASE_URL) {
+    throw new Error("API URL is missing. Add NEXT_PUBLIC_API_BASE_URL in Vercel, then redeploy.");
+  }
+
   try {
     return new URL(API_BASE_URL).toString().replace(/\/$/, "");
   } catch {
