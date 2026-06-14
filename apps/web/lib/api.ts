@@ -2,7 +2,19 @@
 
 import { getSupabaseClient } from "@/lib/supabase";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+function cleanEnvValue(value: string | undefined) {
+  return value?.trim().replace(/^['"]|['"]$/g, "").trim();
+}
+
+const API_BASE_URL = (cleanEnvValue(process.env.NEXT_PUBLIC_API_BASE_URL) || "http://localhost:8000").replace(/\/$/, "");
+
+function getApiBaseUrl() {
+  try {
+    return new URL(API_BASE_URL).toString().replace(/\/$/, "");
+  } catch {
+    throw new Error("API URL is invalid. Check NEXT_PUBLIC_API_BASE_URL in Vercel.");
+  }
+}
 
 export type ProfileAnalysis = {
   profile_id: string;
@@ -96,7 +108,7 @@ async function apiFetch<T>(path: string, options: RequestInit = {}): Promise<T> 
     headers.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
     ...options,
     headers
   });

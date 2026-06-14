@@ -4,11 +4,19 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let browserClient: SupabaseClient | null = null;
 
+function cleanEnvValue(value: string | undefined) {
+  return value?.trim().replace(/^['"]|['"]$/g, "").trim();
+}
+
+function getSupabaseConfig() {
+  const url = cleanEnvValue(process.env.NEXT_PUBLIC_SUPABASE_URL);
+  const anonKey = cleanEnvValue(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+
+  return { url, anonKey };
+}
+
 export function getSupabaseConfigError() {
-  const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const rawAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const url = rawUrl?.trim();
-  const anonKey = rawAnonKey?.trim();
+  const { url, anonKey } = getSupabaseConfig();
 
   if (!url && !anonKey) {
     return null;
@@ -31,7 +39,7 @@ export function getSupabaseConfigError() {
     return "Supabase anon key has spaces or line breaks. Paste it again as one line.";
   }
 
-  if (anonKey.split(".").length < 3) {
+  if (!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(anonKey)) {
     return "Supabase anon key looks invalid. Use the anon public key from Supabase API settings.";
   }
 
@@ -39,9 +47,11 @@ export function getSupabaseConfigError() {
 }
 
 export function supabaseConfigured() {
+  const { url, anonKey } = getSupabaseConfig();
+
   return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() &&
+    url &&
+      anonKey &&
       !getSupabaseConfigError()
   );
 }
@@ -52,10 +62,8 @@ export function getSupabaseClient() {
   }
 
   if (!browserClient) {
-    browserClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-    );
+    const { url, anonKey } = getSupabaseConfig();
+    browserClient = createClient(url as string, anonKey as string);
   }
 
   return browserClient;
