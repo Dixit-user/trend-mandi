@@ -62,13 +62,13 @@ export default function AnalyzePage() {
                 <Input
                   value={instagramHandle}
                   onChange={(event) => setInstagramHandle(event.target.value)}
-                  placeholder="https://instagram.com/trendmandi"
+                  placeholder="https://instagram.com/creatorname"
                   required
                 />
               </label>
               <p className="rounded-md bg-[#fff0cf] px-3 py-2 text-sm font-semibold leading-6 text-[#8a5a00]">
-                This app is now profile-link based. Local development uses the mock Instagram provider until a live
-                Instagram data provider is connected on the backend.
+                Paste a public Instagram profile link or handle. Trend Mandi will build a creator-fit profile for
+                trend scoring and content generation.
               </p>
               {error ? <p className="rounded-md bg-[#ffe0dc] px-3 py-2 text-sm font-semibold text-[#9e2f24]">{error}</p> : null}
               <Button type="submit" disabled={loading}>

@@ -14,15 +14,15 @@ import {
 const steps = [
   {
     title: "Profile intelligence",
-    copy: "Enter an Instagram profile link and build a creator profile from niche, tone, language, style, and audience."
+    copy: "Paste an Instagram profile link and extract the signals that matter: niche, tone, language, style, and audience."
   },
   {
     title: "Fit-ranked trends",
-    copy: "Score trends by niche similarity, tone fit, freshness, format fit, and audience relevance."
+    copy: "Compare opportunities by niche match, tone fit, freshness, format fit, and audience relevance."
   },
   {
-    title: "Ready-to-copy assets",
-    copy: "Generate hooks and Reel scripts that follow the creator's actual positioning."
+    title: "Publish-ready direction",
+    copy: "Turn matching trends into hooks, Reel scripts, captions, CTAs, and hashtags with a clear content angle."
   }
 ];
 
@@ -34,10 +34,17 @@ const scoreRows = [
 ];
 
 const useCases = [
-  "Creators testing a new niche",
-  "Local businesses planning Reels",
-  "Agencies preparing content angles",
-  "Founders turning questions into posts"
+  "Creators planning weekly Reels",
+  "Local brands testing content angles",
+  "Agencies preparing client briefs",
+  "Founders turning market questions into posts"
+];
+
+const proofPoints = [
+  { value: "5", label: "profile signals" },
+  { value: "100", label: "fit score scale" },
+  { value: "3", label: "asset types" },
+  { value: "1", label: "focused workflow" }
 ];
 
 function BrandMark() {
@@ -59,7 +66,7 @@ function ProductScene() {
               <p className="text-xs font-black uppercase text-muted">Profile analysis</p>
               <p className="mt-1 text-lg font-black">instagram.com/fitcoachdelhi</p>
             </div>
-            <span className="rounded-md bg-mint px-3 py-1 text-xs font-black text-teal">Live fit</span>
+            <span className="rounded-md bg-mint px-3 py-1 text-xs font-black text-teal">Fit profile</span>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             {["Fitness", "Educational", "Short-form Reels"].map((item) => (
@@ -109,8 +116,8 @@ function ProductScene() {
         </div>
 
         <div className="rounded-md border border-white/12 bg-[#f4a62a] p-4 text-ink">
-          <p className="text-xs font-black uppercase">Next asset</p>
-          <p className="mt-2 text-base font-black">30-second Reel script with hook, scenes, voiceover, caption, CTA, and hashtags.</p>
+          <p className="text-xs font-black uppercase">Output</p>
+          <p className="mt-2 text-base font-black">30-second Reel script with hook, scene beats, voiceover, caption, CTA, and hashtags.</p>
         </div>
       </div>
     </div>
@@ -148,12 +155,12 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-10 pt-10 sm:px-6 lg:grid-cols-[0.86fr_1.14fr] lg:px-8 lg:pb-14 lg:pt-16">
           <div className="max-w-3xl">
             <p className="mb-5 inline-flex rounded-md border border-white/16 bg-white/8 px-3 py-1 text-xs font-bold uppercase text-[#b9fff7]">
-              Premium trend intelligence for creators
+              Creator trend intelligence
             </p>
-            <h1 className="text-5xl font-black leading-tight sm:text-6xl lg:text-7xl">Trend Mandi</h1>
+            <h1 className="text-5xl font-black leading-tight sm:text-6xl lg:text-7xl">Turn Instagram profiles into trend-fit content plans.</h1>
             <p className="mt-6 max-w-2xl text-lg font-medium leading-8 text-white/78 sm:text-xl">
-              Analyze an Instagram profile, rank trends by true creator fit, and generate content assets that sound
-              tailored instead of templated.
+              Trend Mandi helps creators and small teams decide which trends are worth posting before they waste time
+              making content that does not fit their audience.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
@@ -172,10 +179,10 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className="mt-8 grid max-w-xl grid-cols-2 gap-3 sm:grid-cols-4">
-              {["Niche", "Tone", "Freshness", "Audience"].map((item) => (
-                <div key={item} className="border-l border-white/18 pl-3">
-                  <p className="text-xl font-black text-white">Fit</p>
-                  <p className="mt-1 text-xs font-semibold uppercase leading-5 text-white/58">{item}</p>
+              {proofPoints.map((item) => (
+                <div key={item.label} className="border-l border-white/18 pl-3">
+                  <p className="text-xl font-black text-white">{item.value}</p>
+                  <p className="mt-1 text-xs font-semibold uppercase leading-5 text-white/58">{item.label}</p>
                 </div>
               ))}
             </div>
@@ -193,9 +200,9 @@ export default function LandingPage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
             {[
-              ["Copied trends feel off-brand", Flame],
-              ["Generic hooks waste good ideas", Wand2],
-              ["Private keys never touch the browser", LockKeyhole]
+              ["Avoid off-brand trend chasing", Flame],
+              ["Generate from positioning, not prompts", Wand2],
+              ["Protect backend keys and auth flows", LockKeyhole]
             ].map(([title, Icon]) => (
               <div key={String(title)} className="rounded-md border border-line bg-paper p-4">
                 <Icon className="h-5 w-5 text-teal" />
@@ -211,7 +218,7 @@ export default function LandingPage() {
           <div className="mb-7 flex items-end justify-between gap-4">
             <div>
               <p className="text-sm font-bold uppercase text-teal">Workflow</p>
-              <h2 className="mt-2 text-3xl font-black">From profile link to content assets.</h2>
+              <h2 className="mt-2 text-3xl font-black">From profile link to content plan.</h2>
             </div>
             <Sparkles className="hidden h-8 w-8 text-saffron sm:block" />
           </div>
@@ -235,7 +242,8 @@ export default function LandingPage() {
             <p className="text-sm font-bold uppercase text-coral">Built for</p>
             <h2 className="mt-2 text-3xl font-black leading-tight">Creators who need direction before generation.</h2>
             <p className="mt-4 text-sm leading-6 text-muted">
-              Trend Mandi keeps the experience focused: profile signals first, trend fit second, generated content last.
+              Trend Mandi keeps the experience focused: understand the creator, rank the opportunity, then create the
+              asset. The product is intentionally narrow so the decision feels fast.
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
@@ -253,10 +261,10 @@ export default function LandingPage() {
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 py-12 sm:px-6 md:grid-cols-2 lg:px-8">
           <div>
             <p className="text-sm font-bold uppercase text-coral">Pricing</p>
-            <h2 className="mt-2 text-3xl font-black">Start free, upgrade when billing is connected.</h2>
+            <h2 className="mt-2 text-3xl font-black">Start with the creator workflow today.</h2>
             <p className="mt-4 text-sm leading-6 text-muted">
-              Free includes profile analysis, hook generation, script generation, and basic trends. Pro is wired as a
-              product surface with backend placeholders for Razorpay integration.
+              Use the free plan to analyze profiles, match trends, and generate content direction. Pro is designed for
+              creators and teams who need higher limits and saved workflows.
             </p>
           </div>
           <Link

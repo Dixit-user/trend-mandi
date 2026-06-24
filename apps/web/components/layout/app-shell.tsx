@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { BarChart3, Home, LineChart, LogOut, PenLine, Sparkles, Wand2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { getSupabaseClient, supabaseConfigured } from "@/lib/supabase";
+import { getSupabaseClient } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="absolute bottom-5 left-4 right-4">
           <Button variant="outline" className="w-full justify-start" onClick={signOut}>
             <LogOut className="h-4 w-4" />
-            {supabaseConfigured() ? "Sign out" : "Demo mode"}
+            Sign out
           </Button>
         </div>
       </aside>

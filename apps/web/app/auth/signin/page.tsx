@@ -59,7 +59,7 @@ export default function SignInPage() {
           </Link>
           <CardTitle>Sign in</CardTitle>
           <p className="mt-2 text-sm leading-6 text-muted">
-            {supabaseConfigured() ? "Use your Supabase account." : "Demo mode is active until Supabase env vars are set."}
+            {supabaseConfigured() ? "Continue to your creator trend workspace." : "Authentication is being configured for this deployment."}
           </p>
         </CardHeader>
         <CardContent>

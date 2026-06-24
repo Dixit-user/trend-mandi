@@ -43,7 +43,7 @@ export default function DashboardPage() {
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
           <p className="text-sm font-bold uppercase text-coral">Dashboard</p>
-          <h1 className="mt-2 text-3xl font-black text-ink">Your creator trend workspace</h1>
+          <h1 className="mt-2 text-3xl font-black text-ink">Your creator intelligence workspace</h1>
         </div>
         <Link
           href="/dashboard/analyze"
@@ -64,7 +64,8 @@ export default function DashboardPage() {
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div>
               <p className="text-sm leading-6 text-muted">
-                Turn an Instagram profile link into niche, tone, language, audience, and content style signals.
+                Turn an Instagram profile link into the strategic signals needed to decide which trends are worth
+                making.
               </p>
               <Link
                 href="/dashboard/analyze"
@@ -80,8 +81,8 @@ export default function DashboardPage() {
                 <p className="mt-2 font-bold">Score trends after saving a profile.</p>
               </div>
               <div className="rounded-md border border-line bg-mint p-4 text-teal">
-                <p className="text-xs font-bold uppercase">Profile link analysis</p>
-                <p className="mt-2 font-bold">Ready for a real Instagram provider.</p>
+                <p className="text-xs font-bold uppercase">Creator fit engine</p>
+                <p className="mt-2 font-bold">Profile signals power every trend score and generated asset.</p>
               </div>
             </div>
           </CardContent>

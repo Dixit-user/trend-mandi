@@ -46,7 +46,7 @@ export default function SignUpPage() {
       return;
     }
 
-    setMessage("Account created. Check your email if confirmations are enabled, then sign in.");
+    setMessage("Account created. You can now continue to your creator workspace.");
   }
 
   return (
@@ -61,7 +61,7 @@ export default function SignUpPage() {
           </Link>
           <CardTitle>Create account</CardTitle>
           <p className="mt-2 text-sm leading-6 text-muted">
-            Email auth is powered by Supabase. Instagram passwords are never requested.
+            Create your Trend Mandi workspace. Instagram passwords are never requested.
           </p>
         </CardHeader>
         <CardContent>

@@ -5,17 +5,17 @@ const plans = [
   {
     name: "Free",
     price: "Rs 0",
-    description: "For testing your creator fit workflow.",
+    description: "For creators validating their trend-fit workflow.",
     features: ["3 profile analyses per month", "10 hook generations", "3 Reel scripts", "Basic trend catalog"],
     cta: "Start free",
     href: "/dashboard/analyze"
   },
   {
     name: "Pro",
-    price: "Coming soon",
+    price: "Private beta",
     description: "For creators and small teams publishing weekly.",
-    features: ["Higher generation limits", "Priority trend sources", "Saved workspaces", "Razorpay billing placeholder"],
-    cta: "Preview Pro",
+    features: ["Higher generation limits", "Priority trend sources", "Saved workspaces", "Team-ready content planning"],
+    cta: "Join waitlist",
     href: "/dashboard"
   }
 ];
@@ -29,10 +29,10 @@ export default function PricingPage() {
         </Link>
         <div className="mt-8 max-w-2xl">
           <p className="text-sm font-bold uppercase text-coral">Pricing</p>
-          <h1 className="mt-3 text-4xl font-black leading-tight sm:text-5xl">Simple limits for the MVP.</h1>
+          <h1 className="mt-3 text-4xl font-black leading-tight sm:text-5xl">Simple pricing for creator trend decisions.</h1>
           <p className="mt-4 text-base leading-7 text-muted">
-            The subscription table is included now. Razorpay checkout and webhook integration are marked for the
-            next build phase.
+            Start free while you validate profile-fit trend planning. Upgrade paths are shaped for creators, agencies,
+            and small teams that need more content decisions each month.
           </p>
         </div>
 
