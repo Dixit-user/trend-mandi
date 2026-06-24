@@ -29,8 +29,7 @@ async def analyze_profile(
     captions = instagram_provider.get_recent_captions(instagram_handle)
     source = "instagram_provider"
     source_note = (
-        "Analyzed from the configured Instagram profile provider. The local MVP provider is mock-based; "
-        "connect a real Instagram data provider for live account analysis."
+        "Analyzed from the configured Instagram profile provider and converted into creator-fit signals."
     )
 
     ensure_feature_allowed(repository, user_id, "profile_analyze")

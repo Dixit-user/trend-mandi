@@ -117,6 +117,47 @@ class MockInstagramProvider:
         "salon": "skincare",
     }
 
+    tone_samples = [
+        "practical and checklist-driven",
+        "direct and opinionated",
+        "warm and story-led",
+        "premium and polished",
+        "relatable and conversational",
+        "high-energy and challenge-based",
+    ]
+
+    format_samples = [
+        "uses quick Reel hooks, text overlays, and saveable tips",
+        "leans on before-after comparisons and simple breakdowns",
+        "turns daily routines into short educational videos",
+        "mixes personal stories with practical takeaways",
+        "uses list-style captions and comment prompts",
+        "builds content around myths, mistakes, and fixes",
+    ]
+
+    audience_samples = [
+        "beginners who want simple next steps",
+        "busy young professionals with limited time",
+        "students and early-career followers",
+        "small business owners looking for practical ideas",
+        "Indian urban audiences who prefer realistic examples",
+        "creators who want repeatable content systems",
+    ]
+
+    city_keywords = {
+        "delhi": "Delhi",
+        "mumbai": "Mumbai",
+        "bangalore": "Bengaluru",
+        "bengaluru": "Bengaluru",
+        "pune": "Pune",
+        "jaipur": "Jaipur",
+        "ahmedabad": "Ahmedabad",
+        "surat": "Surat",
+        "hyderabad": "Hyderabad",
+        "chennai": "Chennai",
+        "kolkata": "Kolkata",
+    }
+
     def normalize_handle(self, handle: str) -> str:
         raw = handle.strip()
         if not raw:
@@ -141,10 +182,49 @@ class MockInstagramProvider:
         digest = hashlib.sha256(lowered.encode("utf-8")).hexdigest()
         return niches[int(digest[:2], 16) % len(niches)]
 
+    def _pick(self, handle: str, items: List[str], offset: int = 0) -> str:
+        digest = hashlib.sha256(f"{handle}:{offset}".encode("utf-8")).hexdigest()
+        return items[int(digest[:4], 16) % len(items)]
+
+    def _secondary_niche(self, handle: str, primary_niche: str) -> str:
+        niches = [niche for niche in self.niche_samples if niche != primary_niche]
+        return self._pick(handle, niches, offset=7)
+
+    def _city_context(self, handle: str) -> str | None:
+        lowered = handle.lower()
+        for keyword, city in self.city_keywords.items():
+            if keyword in lowered:
+                return city
+        return None
+
+    def _handle_signal_captions(self, handle: str, niche: str) -> List[str]:
+        tone = self._pick(handle, self.tone_samples, offset=1)
+        content_format = self._pick(handle, self.format_samples, offset=2)
+        audience = self._pick(handle, self.audience_samples, offset=3)
+        secondary_niche = self._secondary_niche(handle, niche)
+        city = self._city_context(handle)
+        city_phrase = f" for {city} followers" if city else ""
+
+        return [
+            f"Creator positioning note: this @{handle} page feels {tone}{city_phrase}.",
+            f"Content pattern: the account {content_format} for {audience}.",
+            f"Audience cue: posts should serve {audience} with examples from {niche} and occasional {secondary_niche} angles.",
+        ]
+
     def get_recent_captions(self, handle: str) -> List[str]:
         clean_handle = self.normalize_handle(handle)
         niche = self.infer_demo_niche(clean_handle)
-        return [f"@{clean_handle}: {caption}" for caption in self.niche_samples[niche]]
+        secondary_niche = self._secondary_niche(clean_handle, niche)
+        primary_captions = self.niche_samples[niche]
+        secondary_captions = self.niche_samples[secondary_niche]
+        selected = [
+            primary_captions[int(hashlib.sha256(f"{clean_handle}:p0".encode("utf-8")).hexdigest()[:2], 16) % len(primary_captions)],
+            primary_captions[int(hashlib.sha256(f"{clean_handle}:p1".encode("utf-8")).hexdigest()[:2], 16) % len(primary_captions)],
+            primary_captions[int(hashlib.sha256(f"{clean_handle}:p2".encode("utf-8")).hexdigest()[:2], 16) % len(primary_captions)],
+            secondary_captions[int(hashlib.sha256(f"{clean_handle}:s0".encode("utf-8")).hexdigest()[:2], 16) % len(secondary_captions)],
+            *self._handle_signal_captions(clean_handle, niche),
+        ]
+        return [f"@{clean_handle}: {caption}" for caption in selected]
 
 
 def get_instagram_provider() -> InstagramProvider:

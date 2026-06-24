@@ -114,8 +114,11 @@ class OpenAIService:
 
     def _fallback_profile_analysis(self, captions: List[str], instagram_handle: str | None = None) -> ProfileAnalysis:
         text = " ".join([instagram_handle or "", *captions]).lower()
+        handle_text = (instagram_handle or "").lower()
         niche_keywords = {
             "fitness": [
+                "fit",
+                "coach",
                 "gym",
                 "protein",
                 "workout",
@@ -143,6 +146,8 @@ class OpenAIService:
                 "fit check",
             ],
             "food": [
+                "foodie",
+                "diary",
                 "recipe",
                 "tiffin",
                 "snack",
@@ -157,10 +162,10 @@ class OpenAIService:
                 "breakfast",
             ],
             "business": [
+                "founder",
+                "startup",
                 "sales",
                 "customer",
-                "startup",
-                "founder",
                 "business",
                 "profit",
                 "pricing",
@@ -171,6 +176,7 @@ class OpenAIService:
                 "brand",
             ],
             "student life": [
+                "studyhub",
                 "exam",
                 "study",
                 "hostel",
@@ -221,6 +227,7 @@ class OpenAIService:
                 "goals",
             ],
             "skincare": [
+                "glow",
                 "skin",
                 "serum",
                 "routine",
@@ -251,14 +258,38 @@ class OpenAIService:
             niche: sum(text.count(keyword) for keyword in keywords)
             for niche, keywords in niche_keywords.items()
         }
+        for niche, keywords in niche_keywords.items():
+            if any(keyword in handle_text for keyword in keywords):
+                scores[niche] += 6
         sorted_scores = sorted(scores.items(), key=lambda item: item[1], reverse=True)
         niche = sorted_scores[0][0] if sorted_scores[0][1] > 0 else self._niche_from_text_hash(text)
 
-        if any(word in text for word in ["pov", "haha", "funny", "relatable", "meme", "roast", "when you"]):
+        explicit_tone_match = re.search(r"page feels ([^.]+)", text)
+        explicit_tone = explicit_tone_match.group(1).strip() if explicit_tone_match else ""
+
+        if "checklist-driven" in explicit_tone:
+            tone = "practical and checklist-driven"
+        elif "opinionated" in explicit_tone:
+            tone = "direct and opinionated"
+        elif "story-led" in explicit_tone:
+            tone = "warm and story-led"
+        elif "premium" in explicit_tone or "polished" in explicit_tone:
+            tone = "premium and polished"
+        elif "conversational" in explicit_tone:
+            tone = "relatable and conversational"
+        elif "challenge-based" in explicit_tone:
+            tone = "high-energy and challenge-based"
+        elif any(word in text for word in ["pov", "haha", "funny", "relatable", "meme", "roast", "when you", "conversational"]):
             tone = "funny and relatable"
-        elif any(word in text for word in ["mistake", "how to", "tip", "workflow", "guide", "save this", "learn"]):
+        elif any(word in text for word in ["direct", "opinionated", "myth", "stop ", "before you", "wrong"]):
+            tone = "direct and opinionated"
+        elif any(word in text for word in ["premium", "polished", "aesthetic", "curated"]):
+            tone = "premium and polished"
+        elif any(word in text for word in ["challenge", "high-energy", "30 day", "reset"]):
+            tone = "high-energy and action-led"
+        elif any(word in text for word in ["mistake", "how to", "tip", "workflow", "guide", "save this", "learn", "checklist"]):
             tone = "educational and practical"
-        elif any(word in text for word in ["journey", "younger self", "dream", "hard", "story", "wish", "felt"]):
+        elif any(word in text for word in ["journey", "younger self", "dream", "hard", "story", "wish", "felt", "story-led"]):
             tone = "emotional and motivational"
         elif any(word in text for word in ["buy", "offer", "limited", "dm", "book", "order", "sale"]):
             tone = "direct and promotional"
@@ -276,14 +307,16 @@ class OpenAIService:
         else:
             language = "English"
 
-        if any(word in text for word in ["carousel", "slides", "swipe", "save this checklist"]):
+        if any(word in text for word in ["carousel", "slides", "swipe", "save this checklist", "list-style"]):
             content_style = "carousel education and saveable lists"
-        elif any(word in text for word in ["pov", "skit", "voiceover", "reel", "video", "transition"]):
+        elif any(word in text for word in ["pov", "skit", "voiceover", "reel", "video", "transition", "text overlays"]):
             content_style = "short-form Reel storytelling"
-        elif any(word in text for word in ["review", "rating", "tested", "before and after"]):
+        elif any(word in text for word in ["review", "rating", "tested", "before and after", "before-after", "comparison"]):
             content_style = "review and comparison content"
-        elif any(word in text for word in ["behind the scenes", "day in my life", "routine"]):
+        elif any(word in text for word in ["behind the scenes", "day in my life", "routine", "daily routines"]):
             content_style = "behind-the-scenes lifestyle content"
+        elif any(word in text for word in ["myths", "mistakes", "fixes"]):
+            content_style = "myth-busting educational content"
         else:
             content_style = "caption-led educational posts"
 
@@ -299,7 +332,20 @@ class OpenAIService:
             "skincare": "beauty and skincare beginners in Indian conditions",
             "local business": "nearby customers and local small business owners",
         }
-        audience_type = audience_by_niche[niche]
+        if "students and early-career followers" in text:
+            audience_type = "students and early-career followers"
+        elif "busy young professionals" in text:
+            audience_type = "busy young professionals with limited time"
+        elif "small business owners looking for practical ideas" in text:
+            audience_type = "small business owners looking for practical ideas"
+        elif "indian urban audiences" in text:
+            audience_type = "Indian urban audiences who prefer realistic examples"
+        elif "creators who want repeatable content systems" in text:
+            audience_type = "creators who want repeatable content systems"
+        elif "beginners who want simple next steps" in text:
+            audience_type = "beginners who want simple next steps"
+        else:
+            audience_type = audience_by_niche[niche]
         confidence = min(90, 54 + min(len(captions), 10) * 4 + min(sorted_scores[0][1], 8) * 2)
 
         return ProfileAnalysis(
@@ -308,7 +354,7 @@ class OpenAIService:
             language=language,
             audience_type=audience_type,
             content_style=content_style,
-            summary=f"This creator appears to make {tone} {niche} content for {audience_type}.",
+            summary=f"This creator appears to make {tone} {niche} content for {audience_type}, using {content_style}.",
             confidence=confidence,
         )
 
