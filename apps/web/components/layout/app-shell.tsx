@@ -41,6 +41,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </span>
         </Link>
 
+        <div className="mt-5 rounded-md border border-line bg-ink p-4 text-white shadow-soft">
+          <p className="text-xs font-black uppercase text-[#b9fff7]">Current workflow</p>
+          <p className="mt-2 text-sm font-bold leading-6">Profile signals to trend-fit assets</p>
+        </div>
+
         <nav className="mt-8 grid gap-1">
           {navItems.map((item) => {
             const active = pathname === item.href;
@@ -51,7 +56,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 href={item.href}
                 className={cn(
                   "focus-ring flex min-h-11 items-center gap-3 rounded-md px-3 text-sm font-semibold transition",
-                  active ? "bg-mint text-teal" : "text-muted hover:bg-paper hover:text-ink"
+                  active ? "bg-mint text-teal shadow-sm" : "text-muted hover:bg-paper hover:text-ink"
                 )}
               >
                 <Icon className="h-4 w-4" />
